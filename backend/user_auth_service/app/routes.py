@@ -33,11 +33,21 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 @router.post("/login", response_model=Token)
 def login(user: UserCreate, db: Session = Depends(get_db)):
     try:
+        # Fetch user from db
         db_user = db.query(User).filter(User.user_name == user.user_name).first()
+        
+        # Validate credentials
         if not db_user or not verify_password(user.password, db_user.password_hash):
             raise InvalidCredentialsException()
 
+        # Create access token
         access_token = create_access_token(data={"sub": db_user.user_name})
         return {"access_token": access_token, "token_type": "bearer"}
-    except:
+    except InvalidCredentialsException:
+        raise
+    except SQLAlchemyError:
         raise DatabaseConnectionException()
+
+# @router.get("/debug")
+# def debug_route():
+#     raise ValueError("This is a test for the global exception handler")
