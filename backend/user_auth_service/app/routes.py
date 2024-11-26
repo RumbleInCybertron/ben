@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User
 from app.auth import hash_password, verify_password, create_access_token
+from app.exceptions import UserAlreadyExistsException, InvalidCredentialsException, DatabaseConnectionException
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -18,21 +19,24 @@ class Token(BaseModel):
 
 @router.post("/signup", response_model=dict)
 def signup(user: UserCreate, db: Session = Depends(get_db)):
-    hashed_password = hash_password(user.password)
-    new_user = User(user_name=user.user_name, password_hash=hashed_password)
     try:
+        hashed_password = hash_password(user.password)
+        new_user = User(user_name=user.user_name, password_hash=hashed_password)
         db.add(new_user)
         db.commit()
         return {"message": "User created successfully"}
-    except:
+    except SQLAlchemyError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="Username already exists")
+        raise UserAlreadyExistsException()
 
 @router.post("/login", response_model=Token)
 def login(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.user_name == user.user_name).first()
-    if not db_user or not verify_password(user.password, db_user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    try:
+        db_user = db.query(User).filter(User.user_name == user.user_name).first()
+        if not db_user or not verify_password(user.password, db_user.password_hash):
+            raise InvalidCredentialsException()
 
-    access_token = create_access_token(data={"sub": db_user.user_name})
-    return {"access_token": access_token, "token_type": "bearer"}
+        access_token = create_access_token(data={"sub": db_user.user_name})
+        return {"access_token": access_token, "token_type": "bearer"}
+    except:
+        raise DatabaseConnectionException()
