@@ -58,6 +58,20 @@ services:
     ports:
       - "8002:8000"
 
+  api_gateway:
+    build:
+      context: ./api_gateway
+    container_name: api_gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - user_auth_service
+      - quest_catalog_service
+
+networks:
+  default:
+    name: app_network # Explicit shared network
+
 volumes:
   user_auth_data:
   quest_catalog_data:
