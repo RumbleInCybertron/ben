@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  user_auth_db:
+    image: postgres:13
+    container_name: user_auth_db
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+      POSTGRES_DB: user_auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_auth_data:/var/lib/postgresql/data
+
+  quest_catalog_db:
+    image: postgres:13
+    container_name: quest_catalog_db
+    environment:
+      POSTGRES_USER: catalog_user
+      POSTGRES_PASSWORD: catalog_pass
+      POSTGRES_DB: quest_catalog_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - quest_catalog_data:/var/lib/postgresql/data
+
+  quest_processing_db:
+    image: postgres:13
+    container_name: quest_processing_db
+    environment:
+      POSTGRES_USER: processing_user
+      POSTGRES_PASSWORD: processing_pass
+      POSTGRES_DB: quest_processing_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - quest_processing_data:/var/lib/postgresql/data
+
+  user_auth_service:
+    build:
+      context: ./user_auth_service
+    container_name: user_auth_service
+    environment:
+      DATABASE_URL: postgres://auth_user:auth_pass@user_auth_db:5432/user_auth_db
+    depends_on:
+      - user_auth_db
+    ports:
+      - "8001:8000"
+
+volumes:
+  user_auth_data:
+  quest_catalog_data:
+  quest_processing_data:
