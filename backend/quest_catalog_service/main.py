@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.database import Base, engine
-from app.routes import router as rewards_router
+from app.routes import router as catalog_router
 
 app = FastAPI()
 
@@ -8,7 +8,7 @@ app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 # Include rewards routes
-app.include_router(rewards_router, prefix="/catalog", tags=["rewards"])
+app.include_router(catalog_router, prefix="/catalog", tags=["catalog"])
 
 @app.get("/")
 def root():

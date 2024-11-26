@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text, DateTime, func, PrimaryKeyConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -24,3 +24,15 @@ class Reward(Base):
     reward_qty = Column(Integer, nullable=False)
 
     quests = relationship("Quest", back_populates="reward")
+    
+class UserQuestReward(Base):
+    __tablename__ = "user_quest_rewards"
+
+    user_id = Column(Integer, nullable=False)
+    quest_id = Column(Integer, ForeignKey("quests.quest_id"), nullable=False)
+    status = Column(String(50), nullable=False)  # ENUM: claimed, not_claimed
+    date = Column(DateTime, default=func.now())
+
+    __table_args__ = (
+        PrimaryKeyConstraint("user_id", "quest_id"),  # Composite primary key
+    )    
