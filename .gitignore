@@ -132,6 +132,7 @@ venv.bak/
 venv_api_gateway/
 venv_user_auth/
 venv_quest_catalog/
+venv_quest_processing/
 
 # Spyder project settings
 .spyderproject
