@@ -6,11 +6,15 @@ catalog_service = QuestCatalogService()
 
 @router.get("/quests/")
 async def list_quests():
-    response = await catalog_service.list_quests()
-    if not response:
-        raise HTTPException(status_code=404, detail="No quests found")
-    return response
-  
+    try:
+        quests = await catalog_service.list_quests()
+        if not quests:
+            raise HTTPException(status_code=404, detail="No quests found")
+        return quests
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch quests: {str(e)}")
+
+## TODO Update all routes with better Exception handling SEE above  
 @router.get("/quests/{quest_id}")
 async def get_quest(quest_id: int):
     response = await catalog_service.get_quest(quest_id)
