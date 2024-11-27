@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models import Reward, Quest, UserQuestReward
+from app.models import Reward, Quest
 from pydantic import BaseModel, Field
 from datetime import datetime
 
@@ -42,22 +42,6 @@ class RewardResponse(BaseModel):
 
     class Config:
         orm_mode = True  # Allows Pydantic to work with SQLAlchemy models
-        
-# Pydantic schema for User Quest Rewards
-class UserQuestRewardCreate(BaseModel):
-    user_id: int
-    quest_id: int
-    status: str
-
-class UserQuestRewardResponse(BaseModel):
-    user_id: int
-    quest_id: int
-    status: str
-    date: datetime
-
-    class Config:
-        orm_mode = True  # Allows Pydantic to work with SQLAlchemy models
-
 
 ## Quest routes        
 @router.post("/quests/", response_model=dict)
@@ -132,37 +116,3 @@ def delete_reward(reward_id: int, db: Session = Depends(get_db)):
     db.delete(reward)
     db.commit()
     return {"message": "Reward deleted successfully"}
-
-
-## User Quest Reward routes
-@router.post("/user_quest_rewards/", response_model=dict)
-def track_user_quest_reward(reward: UserQuestRewardCreate, db: Session = Depends(get_db)):
-    # Validate quest_id exists
-    quest = db.query(Quest).filter(Quest.quest_id == reward.quest_id).first()
-    if not quest:
-        raise HTTPException(status_code=404, detail="Quest not found")
-
-    # Check if the user quest reward already exists
-    existing_reward = db.query(UserQuestReward).filter(
-        UserQuestReward.user_id == reward.user_id,
-        UserQuestReward.quest_id == reward.quest_id
-    ).first()
-
-    if existing_reward:
-        # Update existing record
-        existing_reward.status = reward.status
-        existing_reward.date = func.now()
-    else:
-        # Create new record
-        new_reward = UserQuestReward(**reward.dict())
-        db.add(new_reward)
-
-    db.commit()
-    return {"message": "User quest reward tracked successfully"}
-
-@router.get("/user_quest_rewards/{user_id}", response_model=list[UserQuestRewardResponse])
-def get_user_quest_rewards(user_id: int, db: Session = Depends(get_db)):
-    rewards = db.query(UserQuestReward).filter(UserQuestReward.user_id == user_id).all()
-    if not rewards:
-        raise HTTPException(status_code=404, detail="No rewards found for the user")
-    return rewards
