@@ -11,3 +11,4 @@ class User(Base):
     diamond = Column(Integer, default=0)
     status = Column(Integer, default=0)  # 0: new, 1: not_new, 2: banned
     created_at = Column(DateTime, default=func.now())
+    last_login = Column(DateTime, default=None)
