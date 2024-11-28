@@ -1,4 +1,26 @@
+networks:
+  app_network:
+    driver: bridge
+
 services:
+  user_auth_service:
+    build:
+      context: ./user_auth_service
+    container_name: user_auth_service
+    ports:
+      - "8001:8000"
+    environment:
+      DATABASE_URL: postgres://auth_user:auth_pass@user_auth_db:5432/user_auth_db
+    depends_on:
+      - user_auth_db
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - app_network
+
   user_auth_db:
     image: postgres:13
     container_name: user_auth_db
@@ -10,12 +32,31 @@ services:
       - "5432:5432"
     volumes:
       - user_auth_data:/var/lib/postgresql/data
-      # - ./init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "auth_user"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app_network    
+
+  quest_catalog_service:
+    build:
+      context: ./quest_catalog_service
+    container_name: quest_catalog_service
+    environment:
+      DATABASE_URL: postgres://catalog_user:catalog_pass@quest_catalog_db:5432/quest_catalog_db
+    depends_on:
+      - quest_catalog_db
+    ports:
+      - "8002:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - app_network
 
   quest_catalog_db:
     image: postgres:13
@@ -26,9 +67,35 @@ services:
       POSTGRES_DB: quest_catalog_db
     ports:
       - "5433:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "catalog_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - quest_catalog_data:/var/lib/postgresql/data
-      # - ./init:/docker-entrypoint-initdb.d
+    networks:
+      - app_network
+
+  quest_processing_service:
+    build:
+      context: ./quest_processing_service
+    container_name: quest_processing_service
+    ports:
+      - "8003:8000"
+    environment:
+      DATABASE_URL: postgres://processing_user:processing_pass@quest_processing_db:5432/quest_processing_db
+      QUEST_CATALOG_URL: http://quest_catalog_service:8000
+    depends_on:
+      - quest_processing_db
+      - quest_catalog_service
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - app_network
 
   quest_processing_db:
     image: postgres:13
@@ -41,44 +108,14 @@ services:
       - "5434:5432"
     volumes:
       - quest_processing_data:/var/lib/postgresql/data
-
-  user_auth_service:
-    build:
-      context: ./user_auth_service
-    container_name: user_auth_service
-    environment:
-      DATABASE_URL: postgres://auth_user:auth_pass@user_auth_db:5432/user_auth_db
-    depends_on:
-      - user_auth_db
-    ports:
-      - "8001:8000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      test: ["CMD", "pg_isready", "-U", "processing_user"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app_network
 
-  quest_catalog_service:
-    build:
-      context: ./quest_catalog_service
-    container_name: quest_catalog_service
-    environment:
-      DATABASE_URL: postgres://catalog_user:catalog_pass@quest_catalog_db:5432/quest_catalog_db
-    depends_on:
-      - quest_catalog_db
-    ports:
-      - "8002:8000"
-
-  quest_processing_service:
-    build:
-      context: ./quest_processing_service
-    container_name: quest_processing_service
-    environment:
-      DATABASE_URL: postgres://processing_user:processing_pass@quest_processing_db:5432/quest_processing_db
-    depends_on:
-      - quest_processing_db
-    ports:
-      - "8003:8000"
 
   api_gateway:
     build:
@@ -89,12 +126,17 @@ services:
     depends_on:
       - user_auth_service
       - quest_catalog_service
-
-networks:
-  default:
-    name: app_network # Explicit shared network
+      - quest_processing_service
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - app_network
 
 volumes:
   user_auth_data:
   quest_catalog_data:
   quest_processing_data:
+
