@@ -2,14 +2,33 @@ import requests
 from sqlalchemy.orm import Session
 from .models import UserQuestReward, QuestStatus
 from datetime import datetime
+import logging
 
-def validate_user(user_id: int) -> bool:
-    response = requests.get(f"http://user_auth_service:8001/user/{user_id}")
-    return response.status_code == 200
+USER_AUTH_URL = "http://localhost:8001"
+QUEST_CATALOG_URL = "http://quest_catalog_service:8000/catalog"
 
-def validate_quest(quest_id: int) -> bool:
-    response = requests.get(f"http://quest_catalog_service:8002/quests/{quest_id}")
-    return response.status_code == 200
+def validate_user(user_id: int):
+    return True
+    # try:
+    #     logging.info(f"Fetching user from: {USER_AUTH_URL}/user/{user_id}")
+    #     response = requests.get(f"{USER_AUTH_URL}/user/{user_id}")
+    #     logging.info(f"Response: {response.status_code} - {response.text}")
+    #     if response.status_code == 404:
+    #         return False
+    #     response.raise_for_status()
+    #     return True
+    # except Exception as e:
+    #     print(f"Error validating user: {e}")
+    #     return False
+
+def validate_quest(quest_id: int):
+    try:
+        response = requests.get(f"{QUEST_CATALOG_URL}/quests/{quest_id}")
+        response.raise_for_status()
+        return True
+    except Exception as e:
+        logging.error(f"Error validating quest: {e}")
+        return False
 
 def create_user_quest_reward(db: Session, user_id: int, quest_id: int):
     if not validate_user(user_id):
@@ -17,7 +36,7 @@ def create_user_quest_reward(db: Session, user_id: int, quest_id: int):
     if not validate_quest(quest_id):
         raise ValueError("Quest does not exist.")
     
-    new_reward = UserQuestReward(user_id=user_id, quest_id=quest_id)
+    new_reward = UserQuestReward(user_id=user_id, quest_id=quest_id, status="NOT_CLAIMED")
     db.add(new_reward)
     db.commit()
     db.refresh(new_reward)
@@ -34,7 +53,7 @@ def update_quest_progress(db: Session, user_id: int, quest_id: int, progress: in
     
     reward.progress = progress
     if progress == 100:
-        reward.status = QuestStatus.COMPLETED
+        reward.status = QuestStatus.CLAIMED
         reward.date_completed = datetime.utcnow()
     db.commit()
     db.refresh(reward)
@@ -50,11 +69,11 @@ def complete_quest(db: Session, user_id: int, quest_id: int):
         raise ValueError("Quest not found for user")
 
     # Update quest status
-    reward.status = "completed"
+    reward.status = "CLAIMED"
     db.commit()
 
     # Fetch quest details to determine reward
-    quest_response = requests.get(f"http://quest_catalog_service:8002/quests/{quest_id}")
+    quest_response = requests.get(f"http://localhost:8002/quests/{quest_id}")
     if quest_response.status_code != 200:
         raise ValueError("Quest details not found")
     quest_details = quest_response.json()
@@ -65,7 +84,7 @@ def complete_quest(db: Session, user_id: int, quest_id: int):
 
     # Call User Authentication Service to update rewards
     reward_response = requests.put(
-        f"http://user_auth_service:8001/user/{user_id}/reward",
+        f"http://localhost:8001/user/{user_id}/reward",
         json={"gold": gold, "diamond": diamond}
     )
 

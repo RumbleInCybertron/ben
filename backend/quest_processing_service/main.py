@@ -22,3 +22,9 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"message": "An unexpected error occurred. Please try again later."}
     )
+
+@app.on_event("startup")
+async def log_routes():
+    print("Registered Routes:")
+    for route in app.router.routes:
+        print(f"{route.path} -> {route.name}")

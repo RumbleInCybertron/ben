@@ -4,9 +4,8 @@ from datetime import datetime
 from enum import Enum
 
 class QuestStatus(str, Enum):
-    NEW = "new"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
+    CLAIMED = "CLAIMED"
+    NOT_CLAIMED = "NOT_CLAIMED"
 
 class UserQuestRewardCreate(BaseModel):
     user_id: int
@@ -18,8 +17,14 @@ class UserQuestRewardResponse(BaseModel):
     quest_id: int
     status: QuestStatus
     progress: int
+    streak: int
+    completion_count: int
     date_started: datetime
+    last_updated: Optional[datetime]
     date_completed: Optional[datetime]
 
     class Config:
         orm_mode = True
+
+class UserQuestProgress(BaseModel):
+    user_id: int
