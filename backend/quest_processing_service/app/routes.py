@@ -165,16 +165,26 @@ def claim_reward(user_id: int, quest_id: int, db: Session = Depends(get_db)):
 @router.post("/sign-in-three-times", response_model=dict)
 def process_sign_in_three_times(user_progress: UserQuestProgress, db: Session = Depends(get_db)):
     user_id = user_progress.user_id
+    logging.info(f"Processing Sign-In-Three-Times quest for user_id: {user_id}")
 
     # Fetch quest details for "Sign-In-Three-Times"
-    response = requests.get(f"{QUEST_CATALOG_URL}")
-    response.raise_for_status()
-    quests = response.json()
+    try:
+        response = requests.get(f"{QUEST_CATALOG_URL}/quests")
+        response.raise_for_status()
+        quests = response.json()
+        logging.info(f"Fetched quests: {quests}")
+    except Exception as e:
+        logging.error(f"Failed to fetch quests: {e}")
+        raise HTTPException(status_code=500, detail="Unable to fetch quest details.")
     
     # Find "Sign-In-Three-Times" quest
-    quest = next((q for q in quests if q.get("name") == "Sign-In-Three-Times"), None)
-    if not quest:
-        raise HTTPException(status_code=404, detail="Sign-In-Three-Times Quest not found.")
+    try:
+        quest = next((q for q in quests if q.get("name") == "Sign-In-Three-Times"), None)
+        if not quest:
+            raise HTTPException(status_code=404, detail="Sign-In-Three-Times Quest not found.")
+    except Exception as e:
+        logging.error(f"Error finding Sign-In-Three-Times quest: {e}")
+        raise HTTPException(status_code=500, detail="Error processing quest data.")        
 
     quest_id = quest["quest_id"]
     required_streak = quest["streak"]
@@ -182,47 +192,58 @@ def process_sign_in_three_times(user_progress: UserQuestProgress, db: Session = 
     reward_id = quest["reward_id"]
 
     # Check progress
-    user_quest = db.query(UserQuestReward).filter(
-        UserQuestReward.user_id == user_id,
-        UserQuestReward.quest_id == quest_id
-    ).first()
+    try:
+        user_quest = db.query(UserQuestReward).filter(
+            UserQuestReward.user_id == user_id,
+            UserQuestReward.quest_id == quest_id
+        ).first()
+        logging.info(f"User Quest: {user_quest}")
 
-    now = datetime.utcnow()
-    if user_quest:
-        # Check duplication limit
-        if user_quest.completion_count >= duplication:
-            raise HTTPException(status_code=400, detail="Quest duplication limit reached.")
+        now = datetime.utcnow()
+        if user_quest:
+            # Check duplication limit
+            if user_quest.completion_count >= duplication:
+                raise HTTPException(status_code=400, detail="Quest duplication limit reached.")
 
-        # Update streak progress
-        if user_quest.last_updated and (now - user_quest.last_updated).days == 1:
-            user_quest.streak += 1
+            # Update streak progress
+            if user_quest.last_updated and (now - user_quest.last_updated).days == 1:
+                user_quest.streak += 1
+            else:
+                user_quest.streak = 1  # Reset streak if the user misses a day
+
+            # Check if streak requirement met
+            if user_quest.streak >= required_streak:
+                user_quest.status = QuestStatus.NOT_CLAIMED  # Reward must be claimed manually
+                user_quest.date_completed = now
+            user_quest.completion_count += 1
+            user_quest.last_updated = now
         else:
-            user_quest.streak = 1  # Reset streak if the user misses a day
+            # First time completing quest
+            user_quest = UserQuestReward(
+                user_id=user_id,
+                quest_id=quest_id,
+                streak=1,
+                completion_count=1,
+                last_updated=now,
+                status=QuestStatus.NOT_CLAIMED
+            )
+            db.add(user_quest)
 
-        # Check if streak requirement met
-        if user_quest.streak >= required_streak:
-            user_quest.status = QuestStatus.NOT_CLAIMED  # Reward must be claimed manually
-            user_quest.date_completed = now
-        user_quest.completion_count += 1
-        user_quest.last_updated = now
-    else:
-        # First time completing quest
-        user_quest = UserQuestReward(
-            user_id=user_id,
-            quest_id=quest_id,
-            streak=1,
-            completion_count=1,
-            last_updated=now,
-            status=QuestStatus.NOT_CLAIMED
-        )
-        db.add(user_quest)
-
-    db.commit()
+        db.commit()
+        logging.info("User quest updated successfully.")
+    except Exception as e:
+        logging.error(f"Error updating user quest: {e}")
+        raise HTTPException(status_code=500, detail="Error updating user quest.")    
 
     # Fetch reward details
-    reward_response = requests.get(f"{QUEST_CATALOG_URL}/rewards/{reward_id}")
-    reward_response.raise_for_status()
-    reward = reward_response.json()
+    try:
+        reward_response = requests.get(f"{QUEST_CATALOG_URL}/rewards/{reward_id}")
+        reward_response.raise_for_status()
+        reward = reward_response.json()
+        logging.info(f"Fetched reward details: {reward}")
+    except Exception as e:
+        logging.error(f"Failed to fetch reward details: {e}")
+        raise HTTPException(status_code=500, detail="Unable to fetch reward details.")    
 
     return {
         "message": "Sign-In-Three-Times Quest processed successfully.",
