@@ -1,6 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-from app.routes import user_routes, catalog_routes
+from app.routes import user_routes, catalog_routes, quest_routes
 
 app = FastAPI()
 
@@ -15,6 +15,7 @@ app.add_middleware(
 # Include routes
 app.include_router(user_routes.router, prefix="/user", tags=["User Authentication"])
 app.include_router(catalog_routes.router, prefix="/catalog", tags=["Quest Catalog"])
+app.include_router(quest_routes.router, prefix="/user-quests", tags=["Quest Processing"])
 
 @app.get("/")
 def root():

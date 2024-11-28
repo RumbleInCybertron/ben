@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class UserAuthService:
-    BASE_URL = "http://localhost:8001/user"
+    BASE_URL = "http://user_auth_service:8000/user"
 
     async def signup(self, user_data: dict):
       try:
