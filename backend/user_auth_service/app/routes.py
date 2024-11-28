@@ -62,6 +62,7 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
             "access_token": access_token, 
             "token_type": "bearer",
             "gold": db_user.gold,
+            "diamond": db_user.diamond,
         }
     except InvalidCredentialsException:
         raise
@@ -73,24 +74,30 @@ def get_all_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
     return [{"id": user.user_id, "username": user.user_name} for user in users]
 
-@router.get("/user/{user_id}", response_model=UserResponse)
+@router.get("/{user_id}", response_model=UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
+    print(f"Fetching user with user_id: {user_id}")  # Debug log
     user = db.query(User).filter(User.user_id == user_id).first()
+    print(f"User fetched: {user}")  # Debug log
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@router.put("/user/{user_id}/reward", response_model=dict)
-def update_user_rewards(user_id: int, gold: int = 0, diamond: int = 0, db: Session = Depends(get_db)):
+@router.put("/{user_id}/reward", response_model=dict)
+def update_user_rewards(user_id: int, rewards: dict, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Update gold and diamond values
-    user.gold += gold
-    user.diamond += diamond
+    # Update user attributes dynamically based on rewards
+    for reward_item, reward_qty in rewards.items():
+        if hasattr(user, reward_item):
+            setattr(user, reward_item, getattr(user, reward_item) + reward_qty)
+        else:
+            raise HTTPException(status_code=400, detail=f"Invalid reward item: {reward_item}")
+
     db.commit()
-    return {"message": f"User {user.user_id} rewards updated successfully"}
+    return {"message": "User rewards updated successfully."}
 
 # @router.get("/debug")
 # def debug_route():

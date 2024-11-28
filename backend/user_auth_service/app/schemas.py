@@ -6,7 +6,7 @@ class UserResponse(BaseModel):
     user_name: str
     gold: int
     diamond: int
-    status: str
+    status: int
     created_at: datetime
 
     class Config:
@@ -15,4 +15,5 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
-    gold: int 
+    gold: int
+    diamond: int 
