@@ -9,8 +9,12 @@ from pydantic import BaseModel
 from app.schemas import UserResponse
 from datetime import datetime, timedelta
 from app.schemas import Token
+import logging
+import requests
 
 router = APIRouter()
+
+QUEST_PROCESSING_URL = "http://quest_processing_service:8000/user-quests"
 
 # Pydantic schemas
 class UserCreate(BaseModel):
@@ -24,7 +28,14 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
         new_user = User(user_name=user.user_name, password_hash=hashed_password)
         db.add(new_user)
         db.commit()
+        
+        try:
+            initialize_user_quests(new_user.user_id)
+        except Exception as e:
+            logging.error(f"Error initializing quests for user {new_user.user_id}: {e}")
+        
         return {"message": "User created successfully"}
+
     except SQLAlchemyError:
         db.rollback()
         raise UserAlreadyExistsException()
@@ -102,3 +113,17 @@ def update_user_rewards(user_id: int, rewards: dict, db: Session = Depends(get_d
 # @router.get("/debug")
 # def debug_route():
 #     raise ValueError("This is a test for the global exception handler")
+
+def initialize_user_quests(user_id: int):
+    """
+    Sends a request to quest_processing_service to initialize quests for a new user.
+    """
+    try:
+        response = requests.post(
+            f"{QUEST_PROCESSING_URL}/initialize-user-quests/",
+            json={"user_id": user_id}
+        )
+        response.raise_for_status()
+    except Exception as e:
+        logging.error(f"Error initializing quests for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail="Error initializing user quests.")

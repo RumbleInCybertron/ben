@@ -236,3 +236,34 @@ def process_sign_in_three_times(user_progress: UserQuestProgress, db: Session = 
             "reward_qty": reward["reward_qty"],
         },
     }
+
+@router.post("/initialize-user-quests", response_model=dict)
+def initialize_user_quests(user_data: dict, db: Session = Depends(get_db)):
+    user_id = user_data.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=400, detail="User ID is required.")
+
+    try:
+        # Fetch all quests from quest_catalog_service
+        response = requests.get(f"{QUEST_CATALOG_URL}/quests/")
+        response.raise_for_status()
+        quests = response.json()
+
+        # Create user_quest_rewards for each quest
+        for quest in quests:
+            user_quest = UserQuestReward(
+                user_id=user_id,
+                quest_id=quest["quest_id"],
+                status="NOT_CLAIMED",
+                progress=0,
+                streak=0,
+                completion_count=0,
+                date_started=datetime.utcnow()
+            )
+            db.add(user_quest)
+
+        db.commit()
+        return {"message": "User quests initialized successfully."}
+    except Exception as e:
+        logging.error(f"Error initializing quests for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail="Error initializing user quests.")
