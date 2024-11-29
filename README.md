@@ -29,7 +29,7 @@ This repository contains a microservices-based application with the following se
 ### Step 1: Clone the Repository
 ```bash
 git clone https://github.com/RumbleInCybertron/ben.git
-cd ben
+cd ben/backend
 ```
 
 ### Step 2: Build Docker Images
