@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quest-processing-service
+  namespace: app-namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: quest-processing-service
+  template:
+    metadata:
+      labels:
+        app: quest-processing-service
+    spec:
+      containers:
+      - name: quest-processing-service
+        image: soundwavexmx2/quest-processing-service:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: QUEST_CATALOG_URL
+          value: "http://quest-catalog-service:8000"
+        - name: USER_AUTH_URL
+          value: "http://user-auth-service:8000"
+        - name: API_GATEWAY_URL
+          value: "http://api-gateway:8000"   
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
