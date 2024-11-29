@@ -72,6 +72,9 @@ kubectl apply -f k8s/quest-processing-service-deployment.yml
 kubectl apply -f k8s/quest-processing-service.yml
 kubectl apply -f k8s/api-gateway-deployment.yml
 kubectl apply -f k8s/api-gateway-service.yml
+kubectl apply -f k8s/pvc-quest-catalog-db.yml
+kubectl apply -f k8s/pvc-quest-processing-db.yml
+kubectl apply -f k8s/pvc-user-auth-db.yml
 kubectl apply -f k8s/ingress.yml
 ```
 
