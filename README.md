@@ -64,11 +64,11 @@ kubectl apply -f k8s/quest-catalog-db-deployment.yml
 kubectl apply -f k8s/quest-catalog-db-service.yml
 kubectl apply -f k8s/quest-processing-db-deployment.yml
 kubectl apply -f k8s/quest-processing-db-service.yml
-kubectl apply -f k8s/user-auth-deployment.yml
+kubectl apply -f k8s/user-auth-service-deployment.yml
 kubectl apply -f k8s/user-auth-service.yml
-kubectl apply -f k8s/quest-catalog-deployment.yml
+kubectl apply -f k8s/quest-catalog-service-deployment.yml
 kubectl apply -f k8s/quest-catalog-service.yml
-kubectl apply -f k8s/quest-processing-deployment.yml
+kubectl apply -f k8s/quest-processing-service-deployment.yml
 kubectl apply -f k8s/quest-processing-service.yml
 kubectl apply -f k8s/api-gateway-deployment.yml
 kubectl apply -f k8s/api-gateway-service.yml
