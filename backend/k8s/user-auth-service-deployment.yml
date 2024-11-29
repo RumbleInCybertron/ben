@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-auth-service
+  namespace: app-namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: user-auth-service
+  template:
+    metadata:
+      labels:
+        app: user-auth-service
+    spec:
+      containers:
+      - name: user-auth-service
+        image: soundwavexmx2/user-auth-service:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: QUEST_PROCESSING_URL
+          value: "http://quest-processing-service:8000"
+        - name: QUEST_CATALOG_URL
+          value: "http://quest-catalog-service:8000"
+        - name: API_GATEWAY_URL
+          value: "http://api-gateway:8000"          
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
