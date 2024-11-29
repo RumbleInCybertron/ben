@@ -91,7 +91,7 @@ Use the external IP to access the application:
 If Kubernetes Ingress is not set up, you can expose the API Gateway service directly using port forwarding:
 
 ```bash
-kubectl port-forward service/api-gateway 8000:8000 -n app-namespace
+kubectl port-forward service/api-gateway 8000:80 -n app-namespace
 ```
 
 This will make the API Gateway accessible at `http://localhost:8000`.
