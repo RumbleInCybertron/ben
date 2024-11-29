@@ -50,6 +50,8 @@ docker tag user-auth-service:latest your-docker-username/quest-catalog-service:l
 docker push your-docker-username/quest-catalog-service:latest
 docker tag user-auth-service:latest your-docker-username/quest-processing-service:latest
 docker push your-docker-username/quest-processing-service:latest
+docker tag user-auth-service:latest your-docker-username/api-gateway:latest
+docker push your-docker-username/api-gateway:latest
 ```
 
 ### Step 3: Deploy Kubernetes Resources
