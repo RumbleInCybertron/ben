@@ -24,7 +24,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: catalog_pass
         - name: POSTGRES_DB
-          value: quest_catalog_db
+          value: quest-catalog-db
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: postgres-storage

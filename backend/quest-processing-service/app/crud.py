@@ -4,7 +4,7 @@ from .models import UserQuestReward, QuestStatus
 from datetime import datetime
 import logging
 
-USER_AUTH_URL = "http://localhost:8001"
+USER_AUTH_URL = "http://user-auth-service:8000"
 QUEST_CATALOG_URL = "http://quest-catalog-service:8000/catalog"
 
 def validate_user(user_id: int):
@@ -73,7 +73,7 @@ def complete_quest(db: Session, user_id: int, quest_id: int):
     db.commit()
 
     # Fetch quest details to determine reward
-    quest_response = requests.get(f"http://localhost:8002/quests/{quest_id}")
+    quest_response = requests.get(f"http://quest-catalog-service:8000/quests/{quest_id}")
     if quest_response.status_code != 200:
         raise ValueError("Quest details not found")
     quest_details = quest_response.json()
@@ -84,7 +84,7 @@ def complete_quest(db: Session, user_id: int, quest_id: int):
 
     # Call User Authentication Service to update rewards
     reward_response = requests.put(
-        f"http://localhost:8001/user/{user_id}/reward",
+        f"http://user-auth-service:8000/user/{user_id}/reward",
         json={"gold": gold, "diamond": diamond}
     )
 

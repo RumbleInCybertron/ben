@@ -24,7 +24,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: processing_pass
         - name: POSTGRES_DB
-          value: quest_processing_db
+          value: quest-processing-db
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: postgres-storage

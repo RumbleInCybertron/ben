@@ -24,7 +24,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: auth_pass
         - name: POSTGRES_DB
-          value: user_auth_db
+          value: user-auth-db
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: postgres-storage
