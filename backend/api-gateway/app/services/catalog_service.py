@@ -1,7 +1,7 @@
 import httpx
 
 class QuestCatalogService:
-    BASE_URL = "http://quest_catalog_service:8000/catalog"
+    BASE_URL = "http://quest-catalog-service:8000/catalog"
 
     async def list_quests(self):
         async with httpx.AsyncClient() as client:

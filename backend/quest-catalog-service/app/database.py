@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 
 # Connect to the PostgreSQL database running in Docker
-DATABASE_URL = "postgresql://catalog_user:catalog_pass@quest_catalog_db:5432/quest_catalog_db"
+DATABASE_URL = "postgresql://catalog_user:catalog_pass@quest-catalog-db:5432/quest-catalog-db"
 
 def wait_for_db():
     while True:

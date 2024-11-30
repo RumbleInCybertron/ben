@@ -12,9 +12,9 @@ import logging
 
 router = APIRouter()
 
-# QUEST_CATALOG_URL = os.getenv("QUEST_CATALOG_URL", "http://quest_catalog_service:8000")
-QUEST_CATALOG_URL = "http://quest_catalog_service:8000/catalog"
-USER_AUTH_URL = "http://user_auth_service:8000/user" 
+# QUEST_CATALOG_URL = os.getenv("QUEST_CATALOG_URL", "http://quest-catalog-service:8000")
+QUEST_CATALOG_URL = "http://quest-catalog-service:8000/catalog"
+USER_AUTH_URL = "http://user-auth-service:8000/user" 
 
 @router.post("/daily-login", response_model=dict)
 def process_daily_login(user_progress: UserQuestProgress, db: Session = Depends(get_db)):
@@ -139,7 +139,7 @@ def claim_reward(user_id: int, quest_id: int, db: Session = Depends(get_db)):
     if not user_quest:
         raise HTTPException(status_code=404, detail="Quest not available for claiming.")
 
-    # Fetch reward details from quest_catalog_service
+    # Fetch reward details from quest-catalog-service
     reward_response = requests.get(f"{QUEST_CATALOG_URL}/rewards/{quest_id}")
     if reward_response.status_code != 200:
         raise HTTPException(status_code=500, detail="Unable to fetch reward details.")
@@ -152,7 +152,7 @@ def claim_reward(user_id: int, quest_id: int, db: Session = Depends(get_db)):
     user_quest.status = "claimed"
     db.commit()
 
-    # Notify user_auth_service to add rewards
+    # Notify user-auth-service to add rewards
     user_reward_update_response = requests.put(
         f"{USER_AUTH_URL}/{user_id}/reward",
         json={reward_item: reward_qty}
@@ -265,7 +265,7 @@ def initialize_user_quests(user_data: dict, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="User ID is required.")
 
     try:
-        # Fetch all quests from quest_catalog_service
+        # Fetch all quests from quest-catalog-service
         response = requests.get(f"{QUEST_CATALOG_URL}/quests/")
         response.raise_for_status()
         quests = response.json()

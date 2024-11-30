@@ -1,7 +1,7 @@
 import httpx
 
 class QuestProcessingService:
-    BASE_URL = "http://quest_processing_service:8000"    
+    BASE_URL = "http://quest-processing-service:8000"    
 
     async def process_daily_login(self, user_id: int):
         async with httpx.AsyncClient() as client:

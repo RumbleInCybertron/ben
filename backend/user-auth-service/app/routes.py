@@ -14,7 +14,7 @@ import requests
 
 router = APIRouter()
 
-QUEST_PROCESSING_URL = "http://quest_processing_service:8000/user-quests"
+QUEST_PROCESSING_URL = "http://quest-processing-service:8000/user-quests"
 
 # Pydantic schemas
 class UserCreate(BaseModel):
@@ -116,7 +116,7 @@ def update_user_rewards(user_id: int, rewards: dict, db: Session = Depends(get_d
 
 def initialize_user_quests(user_id: int):
     """
-    Sends a request to quest_processing_service to initialize quests for a new user.
+    Sends a request to quest-processing-service to initialize quests for a new user.
     """
     try:
         response = requests.post(

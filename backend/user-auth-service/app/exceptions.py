@@ -1,7 +1,7 @@
 import logging
 from fastapi import HTTPException, status
 
-logger = logging.getLogger("user_auth_service")
+logger = logging.getLogger("user-auth-service")
 
 class UserAlreadyExistsException(HTTPException):
     def __init__(self):

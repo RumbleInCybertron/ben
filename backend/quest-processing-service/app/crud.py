@@ -5,7 +5,7 @@ from datetime import datetime
 import logging
 
 USER_AUTH_URL = "http://localhost:8001"
-QUEST_CATALOG_URL = "http://quest_catalog_service:8000/catalog"
+QUEST_CATALOG_URL = "http://quest-catalog-service:8000/catalog"
 
 def validate_user(user_id: int):
     return True

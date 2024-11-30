@@ -2,10 +2,13 @@ import time
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import logging
 from sqlalchemy.exc import OperationalError
 
-# Connect to the PostgreSQL database running in Docker
-DATABASE_URL = "postgresql://auth_user:auth_pass@user_auth_db:5432/user_auth_db"
+DATABASE_URL = "postgresql://processing_user:processing_pass@quest-processing-db:5432/quest-processing-db"
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def wait_for_db():
     while True:
@@ -13,7 +16,7 @@ def wait_for_db():
             temp_engine = create_engine(DATABASE_URL)
             connection = temp_engine.connect()
             connection.close()
-            print("Database is ready!")
+            print("Quest Catalog Database is ready!")
             break
         except OperationalError:
             print("Database not ready, retrying in 2 seconds...")
@@ -21,11 +24,13 @@ def wait_for_db():
 
 wait_for_db()
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+try:
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base = declarative_base()
+except Exception as e:
+    logger.error(f"Database connection failed: {e}")
 
-# Dependency for database session
 def get_db():
     db = SessionLocal()
     try:

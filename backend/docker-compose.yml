@@ -3,68 +3,68 @@ networks:
     driver: bridge
 
 services:
-  user_auth_service:
+  user-auth-service:
     build:
-      context: ./user_auth_service
-    container_name: user_auth_service
+      context: ./user-auth-service
+    container_name: user-auth-service
     ports:
       - "8001:8000"
     environment:
-      DATABASE_URL: postgres://auth_user:auth_pass@user_auth_db:5432/user_auth_db
+      DATABASE_URL: postgres://auth_user:auth_pass@user-auth-db:5432/user-auth-db
     depends_on:
-      - user_auth_db
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      - user-auth-db
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
     networks:
       - app_network
 
-  user_auth_db:
+  user-auth-db:
     image: postgres:13
-    container_name: user_auth_db
+    container_name: user-auth-db
     environment:
       POSTGRES_USER: auth_user
       POSTGRES_PASSWORD: auth_pass
-      POSTGRES_DB: user_auth_db
+      POSTGRES_DB: user-auth-db
     ports:
       - "5432:5432"
     volumes:
-      - user_auth_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "auth_user"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - user-auth-data:/var/lib/postgresql/data
+    # healthcheck:
+    #   test: ["CMD", "pg_isready", "-U", "auth_user"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     networks:
       - app_network    
 
-  quest_catalog_service:
+  quest-catalog-service:
     build:
-      context: ./quest_catalog_service
-    container_name: quest_catalog_service
+      context: ./quest-catalog-service
+    container_name: quest-catalog-service
     environment:
-      DATABASE_URL: postgres://catalog_user:catalog_pass@quest_catalog_db:5432/quest_catalog_db
+      DATABASE_URL: postgres://catalog_user:catalog_pass@quest-catalog-db:5432/quest-catalog-db
     depends_on:
-      - quest_catalog_db
+      - quest-catalog-db
     ports:
       - "8002:8000"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
     networks:
       - app_network
 
-  quest_catalog_db:
+  quest-catalog-db:
     image: postgres:13
-    container_name: quest_catalog_db
+    container_name: quest-catalog-db
     environment:
       POSTGRES_USER: catalog_user
       POSTGRES_PASSWORD: catalog_pass
-      POSTGRES_DB: quest_catalog_db
+      POSTGRES_DB: quest-catalog-db
     ports:
       - "5433:5432"
     healthcheck:
@@ -73,70 +73,69 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - quest_catalog_data:/var/lib/postgresql/data
+      - quest-catalog-data:/var/lib/postgresql/data
     networks:
       - app_network
 
-  quest_processing_service:
+  quest-processing-service:
     build:
-      context: ./quest_processing_service
-    container_name: quest_processing_service
+      context: ./quest-processing-service
+    container_name: quest-processing-service
     ports:
       - "8003:8000"
     environment:
-      DATABASE_URL: postgres://processing_user:processing_pass@quest_processing_db:5432/quest_processing_db
-      QUEST_CATALOG_URL: http://quest_catalog_service:8000
+      DATABASE_URL: postgres://processing_user:processing_pass@quest-processing-db:5432/quest-processing-db
+      QUEST_CATALOG_URL: http://quest-catalog-service:8000
     depends_on:
-      - quest_processing_db
-      - quest_catalog_service
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      - quest-processing-db
+      - quest-catalog-service
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
     networks:
       - app_network
 
-  quest_processing_db:
+  quest-processing-db:
     image: postgres:13
-    container_name: quest_processing_db
+    container_name: quest-processing-db
     environment:
       POSTGRES_USER: processing_user
       POSTGRES_PASSWORD: processing_pass
-      POSTGRES_DB: quest_processing_db
+      POSTGRES_DB: quest-processing-db
     ports:
       - "5434:5432"
     volumes:
-      - quest_processing_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "processing_user"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - quest-processing-data:/var/lib/postgresql/data
+    # healthcheck:
+    #   test: ["CMD", "pg_isready", "-U", "processing_user"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     networks:
       - app_network
 
 
-  api_gateway:
+  api-gateway:
     build:
-      context: ./api_gateway
-    container_name: api_gateway
+      context: ./api-gateway
+    container_name: api-gateway
     ports:
       - "8000:8000"
     depends_on:
-      - user_auth_service
-      - quest_catalog_service
-      - quest_processing_service
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      - user-auth-service
+      - quest-catalog-service
+      - quest-processing-service
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
     networks:
       - app_network
 
 volumes:
-  user_auth_data:
-  quest_catalog_data:
-  quest_processing_data:
-
+  user-auth-data:
+  quest-catalog-data:
+  quest-processing-data:
