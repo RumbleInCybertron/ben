@@ -16,7 +16,10 @@ def wait_for_db():
             print("Quest Catalog Database is ready!")
             break
         except OperationalError:
-            print("Database not ready, retrying in 2 seconds...")
+            print("Database not ready, retrying in 2 seconds...\nError details: {e}")
+            time.sleep(2)
+        except Exception as e:
+            print(f"Unexpected error occurred: {e}")
             time.sleep(2)
 
 wait_for_db()
