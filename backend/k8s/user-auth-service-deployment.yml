@@ -19,12 +19,14 @@ spec:
         ports:
         - containerPort: 8000
         env:
+        - name: PORT
+          value: "80"
         - name: QUEST_PROCESSING_URL
-          value: "http://quest-processing-service:8000"
+          value: "http://quest-processing-service:80"
         - name: QUEST_CATALOG_URL
-          value: "http://quest-catalog-service:8000"
+          value: "http://quest-catalog-service:80"
         - name: API_GATEWAY_URL
-          value: "http://api-gateway:8000"
+          value: "http://api-gateway:80"
         - name: DB_HOST
           value: "user-auth-db"
         - name: DB_PORT
