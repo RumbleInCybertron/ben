@@ -36,10 +36,10 @@ cd ben/backend
 
 Navigate to the root directory and build the Docker images:
 ```bash
-docker build -t user-auth-service ./user_auth_service
-docker build -t quest-catalog-service ./quest_catalog_service
-docker build -t quest-processing-service ./quest_processing_service
-docker build -t api-gateway ./api_gateway
+docker build -t user-auth-service ./user-auth-service
+docker build -t quest-catalog-service ./quest-catalog-service
+docker build -t quest-processing-service ./quest-processing-service
+docker build -t api-gateway ./api-gateway
 ```
 
 Push the images to a container registry (e.g., Docker Hub):
