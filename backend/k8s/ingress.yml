@@ -6,7 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassname: nginx
+  ingressClassName: nginx
   rules:
   - http:
       paths:
