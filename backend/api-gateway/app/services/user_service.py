@@ -24,3 +24,15 @@ class UserAuthService:
         async with httpx.AsyncClient() as client:
             response = await client.post(f"{self.BASE_URL}/login", json=user_data)
         return response.json() if response.status_code == 200 else None
+
+
+    async def get_all_users(self):
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(f"{self.BASE_URL}/users/")
+                logger.debug(f"Request sent to {self.BASE_URL}/users/")
+                logger.debug(f"Response: {response.status_code}, {response.text}")
+                return response.json() if response.status_code == 200 else None
+        except httpx.RequestError as e:
+            logger.error(f"HTTPX Request Error: {e}")
+            raise

@@ -26,17 +26,7 @@ spec:
         - name: USER_AUTH_URL
           value: "http://user-auth-service"
         - name: API_GATEWAY_URL
-          value: "http://api-gateway"
-        - name: DB_HOST
-          value: "quest-processing-db"
-        - name: DB_PORT
-          value: "5432"
-        - name: DB_USER
-          value: "processing_user"
-        - name: DB_PASSWORD
-          value: "processing_pass"
-        - name: DB_NAME
-          value: "quest-processing-db"      
+          value: "http://api-gateway"  
         resources:
           requests:
             memory: "128Mi"
