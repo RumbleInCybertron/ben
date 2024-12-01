@@ -191,7 +191,7 @@ Replace `<external-ip>` with the Ingress external IP:
         }
         ```
 
-    *  **POST** `/user-quests/sign-in-three-times`
+      *  **POST** `/user-quests/sign-in-three-times`
       Process the "Sign In Three Times" quest.
       **Request Body**:
       ```json
@@ -206,7 +206,7 @@ Replace `<external-ip>` with the Ingress external IP:
         }
         ```
 
-    *  **POST** `/user-quests/`
+      *  **POST** `/user-quests/`
       Create a new user quest.
       **Request Body**:
       ```json
@@ -222,7 +222,7 @@ Replace `<external-ip>` with the Ingress external IP:
       }
       ```
 
-    * **PUT** `/user-quests/
+      * **PUT** `/user-quests/
       Update progress for a user quest.
       **Request Body**:
       ```json
