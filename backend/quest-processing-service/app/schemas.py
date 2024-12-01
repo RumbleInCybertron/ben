@@ -24,7 +24,7 @@ class UserQuestRewardResponse(BaseModel):
     date_completed: Optional[datetime]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserQuestProgress(BaseModel):
     user_id: int

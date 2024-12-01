@@ -26,7 +26,7 @@ class QuestResponse(BaseModel):
     description: str
 
     class Config:
-        orm_mode = True  # Allows Pydantic to work with SQLAlchemy models
+        from_attributes = True  # Allows Pydantic to work with SQLAlchemy models
 
 # Pydantic schema for Reward
 class RewardCreate(BaseModel):
@@ -41,7 +41,7 @@ class RewardResponse(BaseModel):
     reward_qty: int
 
     class Config:
-        orm_mode = True  # Allows Pydantic to work with SQLAlchemy models
+        from_attributes = True  # Allows Pydantic to work with SQLAlchemy models
 
 ## Quest routes        
 @router.post("/quests/", response_model=dict)
