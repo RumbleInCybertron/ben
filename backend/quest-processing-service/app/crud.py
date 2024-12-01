@@ -3,9 +3,12 @@ from sqlalchemy.orm import Session
 from .models import UserQuestReward, QuestStatus
 from datetime import datetime
 import logging
+import os
 
-USER_AUTH_URL = "http://user-auth-service:8000"
-QUEST_CATALOG_URL = "http://quest-catalog-service:8000/catalog"
+PORT = int(os.getenv("PORT", 8000))
+
+USER_AUTH_URL = f"http://user-auth-service:{PORT}"
+QUEST_CATALOG_URL = f"http://quest-catalog-service:{PORT}/catalog"
 
 def validate_user(user_id: int):
     return True
@@ -73,7 +76,7 @@ def complete_quest(db: Session, user_id: int, quest_id: int):
     db.commit()
 
     # Fetch quest details to determine reward
-    quest_response = requests.get(f"http://quest-catalog-service:8000/quests/{quest_id}")
+    quest_response = requests.get(f"http://quest-catalog-service:{PORT}/quests/{quest_id}")
     if quest_response.status_code != 200:
         raise ValueError("Quest details not found")
     quest_details = quest_response.json()
@@ -84,7 +87,7 @@ def complete_quest(db: Session, user_id: int, quest_id: int):
 
     # Call User Authentication Service to update rewards
     reward_response = requests.put(
-        f"http://user-auth-service:8000/user/{user_id}/reward",
+        f"http://user-auth-service:{PORT}/user/{user_id}/reward",
         json={"gold": gold, "diamond": diamond}
     )
 

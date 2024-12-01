@@ -1,7 +1,10 @@
 import httpx
+import os
+
+PORT = int(os.getenv("PORT", 8000))
 
 class QuestCatalogService:
-    BASE_URL = "http://quest-catalog-service:8000/catalog"
+    BASE_URL = f"http://quest-catalog-service:{PORT}/catalog"
 
     async def list_quests(self):
         async with httpx.AsyncClient() as client:

@@ -1,10 +1,13 @@
 import httpx
 import logging
+import os
+
+PORT = int(os.getenv("PORT", 8000))
 
 logger = logging.getLogger(__name__)
 
 class UserAuthService:
-    BASE_URL = "http://user-auth-service:8000/user"
+    BASE_URL = f"http://user-auth-service:{PORT}/user"
 
     async def signup(self, user_data: dict):
       try:

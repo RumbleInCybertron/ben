@@ -1,7 +1,10 @@
 import httpx
+import os
+
+PORT = int(os.getenv("PORT", 8000))
 
 class QuestProcessingService:
-    BASE_URL = "http://quest-processing-service:8000"    
+    BASE_URL = f"http://quest-processing-service:{PORT}"    
 
     async def process_daily_login(self, user_id: int):
         async with httpx.AsyncClient() as client:

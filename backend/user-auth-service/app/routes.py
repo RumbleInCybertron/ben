@@ -11,10 +11,13 @@ from datetime import datetime, timedelta
 from app.schemas import Token
 import logging
 import requests
+import os
+
+PORT = int(os.getenv("PORT", 8000))
 
 router = APIRouter()
 
-QUEST_PROCESSING_URL = "http://quest-processing-service:8000/user-quests"
+QUEST_PROCESSING_URL = f"http://quest-processing-service:{PORT}/user-quests"
 
 # Pydantic schemas
 class UserCreate(BaseModel):

@@ -10,11 +10,13 @@ from datetime import datetime, timedelta
 import os
 import logging
 
+PORT  = int(os.getenv("PORT", 8000))
+
 router = APIRouter()
 
-# QUEST_CATALOG_URL = os.getenv("QUEST_CATALOG_URL", "http://quest-catalog-service:8000")
-QUEST_CATALOG_URL = "http://quest-catalog-service:8000/catalog"
-USER_AUTH_URL = "http://user-auth-service:8000/user" 
+# QUEST_CATALOG_URL = os.getenv("QUEST_CATALOG_URL", f"http://quest-catalog-service:{PORT}")
+QUEST_CATALOG_URL = f"http://quest-catalog-service:{PORT}/catalog"
+USER_AUTH_URL = f"http://user-auth-service:{PORT}/user" 
 
 @router.post("/daily-login", response_model=dict)
 def process_daily_login(user_progress: UserQuestProgress, db: Session = Depends(get_db)):
@@ -266,6 +268,9 @@ def initialize_user_quests(user_data: dict, db: Session = Depends(get_db)):
 
     try:
         # Fetch all quests from quest-catalog-service
+        # ping endpoint
+        requests.head(f"{QUEST_CATALOG_URL}/quests/")
+        
         response = requests.get(f"{QUEST_CATALOG_URL}/quests/")
         response.raise_for_status()
         quests = response.json()
