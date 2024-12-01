@@ -46,11 +46,11 @@ Push the images to a container registry (e.g., Docker Hub):
 ```bash
 docker tag user-auth-service:latest your-docker-username/user-auth-service:latest
 docker push your-docker-username/user-auth-service:latest
-docker tag user-auth-service:latest your-docker-username/quest-catalog-service:latest
+docker tag quest-catalog-service:latest your-docker-username/quest-catalog-service:latest
 docker push your-docker-username/quest-catalog-service:latest
-docker tag user-auth-service:latest your-docker-username/quest-processing-service:latest
+docker tag quest-processing-service:latest your-docker-username/quest-processing-service:latest
 docker push your-docker-username/quest-processing-service:latest
-docker tag user-auth-service:latest your-docker-username/api-gateway:latest
+docker tag api-gateway:latest your-docker-username/api-gateway:latest
 docker push your-docker-username/api-gateway:latest
 ```
 
