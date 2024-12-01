@@ -24,7 +24,17 @@ spec:
         - name: QUEST_CATALOG_URL
           value: "http://quest-catalog-service:8000"
         - name: API_GATEWAY_URL
-          value: "http://api-gateway:8000"          
+          value: "http://api-gateway:8000"
+        - name: DB_HOST
+          value: "user-auth-db"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: "auth_user"
+        - name: DB_PASSWORD
+          value: "auth_pass"
+        - name: DB_NAME
+          value: "user-auth-db"          
         resources:
           requests:
             memory: "128Mi"
