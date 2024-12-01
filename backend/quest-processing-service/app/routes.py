@@ -14,9 +14,14 @@ PORT  = int(os.getenv("PORT", 8000))
 
 router = APIRouter()
 
-# QUEST_CATALOG_URL = os.getenv("QUEST_CATALOG_URL", f"http://quest-catalog-service:{PORT}")
-QUEST_CATALOG_URL = f"http://quest-catalog-service:{PORT}/catalog"
-USER_AUTH_URL = f"http://user-auth-service:{PORT}/user" 
+# Fetch base URLs from environment variables with default values
+BASE_QUEST_CATALOG_URL = os.getenv("QUEST_CATALOG_URL", "http://quest-catalog-service")
+BASE_USER_AUTH_URL = os.getenv("USER_AUTH_URL", "http://user-auth-service")
+PORT = os.getenv("PORT", "8000")
+
+# Construct the full URLs dynamically
+QUEST_CATALOG_URL = f"{BASE_QUEST_CATALOG_URL}:{PORT}/catalog"
+USER_AUTH_URL = f"{BASE_USER_AUTH_URL}:{PORT}/user"
 
 @router.post("/daily-login", response_model=dict)
 def process_daily_login(user_progress: UserQuestProgress, db: Session = Depends(get_db)):

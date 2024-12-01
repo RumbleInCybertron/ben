@@ -17,7 +17,13 @@ PORT = int(os.getenv("PORT", 8000))
 
 router = APIRouter()
 
-QUEST_PROCESSING_URL = f"http://quest-processing-service:{PORT}/user-quests"
+BASE_QUEST_PROCESSING_URL = os.getenv("QUEST_PROCESSING_URL", "http://quest-processing-service")
+BASE_USER_AUTH_URL = os.getenv("USER_AUTH_URL", "http://user-auth-service")
+PORT = os.getenv("PORT", "8000")
+
+# Construct full URLs
+QUEST_PROCESSING_URL = f"{BASE_QUEST_PROCESSING_URL}:{PORT}/user-quests"
+USER_AUTH_URL = f"{BASE_USER_AUTH_URL}:{PORT}/user"
 
 # Pydantic schemas
 class UserCreate(BaseModel):
@@ -121,6 +127,7 @@ def initialize_user_quests(user_id: int):
     """
     Sends a request to quest-processing-service to initialize quests for a new user.
     """
+    logging.info(f"Starting quest initialization for user_id={user_id}")
     try:
         response = requests.post(
             f"{QUEST_PROCESSING_URL}/initialize-user-quests/",

@@ -20,12 +20,12 @@ spec:
         ports:
         - containerPort: 8000
         env:
-        - name: QUEST_PROCESSING_URL
-          value: "http://quest-processing-service:80"
-        - name: QUEST_CATALOG_URL
-          value: "http://quest-catalog-service:80"
-        - name: USER_AUTH_URL
-          value: "http://user-auth-service:80"          
+        # - name: QUEST_PROCESSING_URL
+        #   value: "http://quest-processing-service:80"
+        # - name: QUEST_CATALOG_URL
+        #   value: "http://quest-catalog-service:80"
+        # - name: USER_AUTH_URL
+        #   value: "http://user-auth-service:80"          
         resources:
           requests:
             memory: "128Mi"

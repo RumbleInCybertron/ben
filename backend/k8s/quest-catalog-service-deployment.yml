@@ -21,12 +21,12 @@ spec:
         env:
         - name: PORT
           value: "80"
-        - name: QUEST_PROCESSING_URL
-          value: "http://quest-processing-service:80"
-        - name: USER_AUTH_URL
-          value: "http://user-auth-service:80"
-        - name: API_GATEWAY_URL
-          value: "http://api-gateway:80"
+        # - name: QUEST_PROCESSING_URL
+        #   value: "http://quest-processing-service:80"
+        # - name: USER_AUTH_URL
+        #   value: "http://user-auth-service:80"
+        # - name: API_GATEWAY_URL
+        #   value: "http://api-gateway:80"
         - name: DB_HOST
           value: "quest-catalog-db"
         - name: DB_PORT

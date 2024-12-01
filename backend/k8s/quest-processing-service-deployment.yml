@@ -22,11 +22,11 @@ spec:
         - name: PORT
           value: "80"
         - name: QUEST_CATALOG_URL
-          value: "http://quest-catalog-service:80"
+          value: "http://quest-catalog-service"
         - name: USER_AUTH_URL
-          value: "http://user-auth-service:80"
+          value: "http://user-auth-service"
         - name: API_GATEWAY_URL
-          value: "http://api-gateway:80"
+          value: "http://api-gateway"
         - name: DB_HOST
           value: "quest-processing-db"
         - name: DB_PORT

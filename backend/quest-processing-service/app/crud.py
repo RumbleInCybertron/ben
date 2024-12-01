@@ -5,10 +5,13 @@ from datetime import datetime
 import logging
 import os
 
+BASE_USER_AUTH_URL = os.getenv("USER_AUTH_URL", "http://user-auth-service")
+BASE_QUEST_CATALOG_URL = os.getenv("QUEST_CATALOG_URL", "http://quest-catalog-service")
 PORT = int(os.getenv("PORT", 8000))
 
-USER_AUTH_URL = f"http://user-auth-service:{PORT}"
-QUEST_CATALOG_URL = f"http://quest-catalog-service:{PORT}/catalog"
+# Construct full URLs dynamically
+USER_AUTH_URL = f"{BASE_USER_AUTH_URL}:{PORT}"
+QUEST_CATALOG_URL = f"{BASE_QUEST_CATALOG_URL}:{PORT}/catalog"
 
 def validate_user(user_id: int):
     return True
@@ -23,6 +26,17 @@ def validate_user(user_id: int):
     # except Exception as e:
     #     print(f"Error validating user: {e}")
     #     return False
+    try:
+        logging.info(f"Fetching user from: {USER_AUTH_URL}/user/{user_id}")
+        response = requests.get(f"{USER_AUTH_URL}/user/{user_id}")
+        logging.info(f"Response: {response.status_code} - {response.text}")
+        if response.status_code == 404:
+            return False
+        response.raise_for_status()
+        return True
+    except Exception as e:
+        logging.error(f"Error validating user: {e}")
+        return False    
 
 def validate_quest(quest_id: int):
     try:
@@ -76,7 +90,7 @@ def complete_quest(db: Session, user_id: int, quest_id: int):
     db.commit()
 
     # Fetch quest details to determine reward
-    quest_response = requests.get(f"http://quest-catalog-service:{PORT}/quests/{quest_id}")
+    quest_response = requests.get(f"{QUEST_CATALOG_URL}/quests/{quest_id}")
     if quest_response.status_code != 200:
         raise ValueError("Quest details not found")
     quest_details = quest_response.json()
@@ -87,7 +101,7 @@ def complete_quest(db: Session, user_id: int, quest_id: int):
 
     # Call User Authentication Service to update rewards
     reward_response = requests.put(
-        f"http://user-auth-service:{PORT}/user/{user_id}/reward",
+        f"{USER_AUTH_URL}/user/{user_id}/reward",
         json={"gold": gold, "diamond": diamond}
     )
 
