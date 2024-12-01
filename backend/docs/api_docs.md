@@ -89,7 +89,7 @@ Replace `<external-ip>` with the Ingress external IP:
       ```
 
   2.  Quest Catalog Service
-    *  **POST** `/catalog/quests`  
+      *  **POST** `/catalog/quests`  
       Create a new quest.
       
       **Request Body**:
@@ -113,7 +113,7 @@ Replace `<external-ip>` with the Ingress external IP:
       }
       ```
 
-    *  **GET** `/catalog/quests`  
+      *  **GET** `/catalog/quests`  
       Retrieve a list of available quests.
       
       **Response**:
@@ -130,7 +130,7 @@ Replace `<external-ip>` with the Ingress external IP:
       ]
       ```
 
-    *  **GET** `/catalog/quests/{id}`  
+      *  **GET** `/catalog/quests/{id}`  
       Retrieve quest details by ID.
       
       **Response**:
@@ -145,7 +145,7 @@ Replace `<external-ip>` with the Ingress external IP:
       }
       ```
 
-    *  **PUT** `/catalog/quests/{id}`  
+      *  **PUT** `/catalog/quests/{id}`  
       Update quest details.
 
       **Request Body**:
@@ -165,7 +165,7 @@ Replace `<external-ip>` with the Ingress external IP:
       }
       ```
 
-    * **DELETE** `/catalog/quests/{id}
+      * **DELETE** `/catalog/quests/{id}
       Delete a quest by ID.
       
       **Response**:
@@ -176,35 +176,35 @@ Replace `<external-ip>` with the Ingress external IP:
       ```
     
   3.  Quest Processing Service
-    *  **POST** `/user-quests/daily-login`
-     Process the Daily Login quest for a user.
-     **Request Body**:
-     ```json
-      {
-        "user_id": 1
-      }
-     ```
-      **Response**:
+      *  **POST** `/user-quests/daily-login`
+      Process the Daily Login quest for a user.
+      **Request Body**:
       ```json
-      {
-        "message": "Daily Login Quest processed successfully"
-      }
+        {
+          "user_id": 1
+        }
       ```
+        **Response**:
+        ```json
+        {
+          "message": "Daily Login Quest processed successfully"
+        }
+        ```
 
     *  **POST** `/user-quests/sign-in-three-times`
-     Process the "Sign In Three Times" quest.
-     **Request Body**:
-     ```json
-      {
-        "user_id": 1
-      }
-     ```
-      **Response**:
+      Process the "Sign In Three Times" quest.
+      **Request Body**:
       ```json
-      {
-        "message": "Quest completed successfully"
-      }
+        {
+          "user_id": 1
+        }
       ```
+        **Response**:
+        ```json
+        {
+          "message": "Quest completed successfully"
+        }
+        ```
 
     *  **POST** `/user-quests/`
       Create a new user quest.
@@ -223,7 +223,7 @@ Replace `<external-ip>` with the Ingress external IP:
       ```
 
     * **PUT** `/user-quests/
-     Update progress for a user quest.
+      Update progress for a user quest.
       **Request Body**:
       ```json
       {
