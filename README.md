@@ -54,6 +54,17 @@ docker tag api-gateway:latest your-docker-username/api-gateway:latest
 docker push your-docker-username/api-gateway:latest
 ```
 
+```bash
+docker images
+```
+
+```bash
+minikube start
+minikube status
+kubectl config use-context minikube
+eval $(minikube docker-env)
+```
+
 ### Step 3: Deploy Kubernetes Resources
 Apply the Kubernetes configurations:
 ```bash
@@ -76,6 +87,12 @@ kubectl apply -f k8s/pvc-quest-catalog-db.yml
 kubectl apply -f k8s/pvc-quest-processing-db.yml
 kubectl apply -f k8s/pvc-user-auth-db.yml
 kubectl apply -f k8s/ingress.yml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+```
+
+```bash
+kubectl get pods -n app-namespace
+kubectl get services -n app-namespace
 ```
 
 ### Step 4: Access the Application
